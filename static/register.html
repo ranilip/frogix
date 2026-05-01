@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register</title>
+  <link rel="stylesheet" href="/base.css?v=note2">
+  <link rel="stylesheet" href="/modal.css?v=note2">
+  <link rel="stylesheet" href="/forms.css?v=note2">
+  <script src="/theme.js"></script>
+</head>
+<body class="modal-page">
+  <main class="modal-backdrop">
+    <section class="modal-panel modal-panel-sm" role="dialog" aria-modal="true" aria-labelledby="register-title">
+      <header class="modal-header">
+        <div>
+          <h1 id="register-title">Set admin password</h1>
+          <p class="note">First-time setup -- choose a password to protect device settings.</p>
+        </div>
+        <a href="/" class="modal-close" aria-label="Close" onclick="return closeModalPage(event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </a>
+      </header>
+      <div class="modal-content">
+      <form method="POST" action="/api/register" class="auth-form" novalidate>
+        <label>
+          Password (min 8 characters)
+          <div class="pw-wrap">
+            <input type="password" name="password" autocomplete="new-password" autofocus>
+            <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+        <label>
+          Confirm
+          <div class="pw-wrap">
+            <input type="password" name="password2" autocomplete="new-password">
+            <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+        <button type="submit">Register</button>
+        <p class="form-status" id="status-register" aria-live="polite"></p>
+      </form>
+      </div>
+    </section>
+  </main>
+  <script src="/auth-common.js"></script>
+  <script>
+    document.querySelector('.auth-form').addEventListener('submit', event => {
+      event.preventDefault();
+      submitAuthForm(
+        event.target,
+        document.getElementById('status-register'),
+        '/login',
+        f => {
+          const p1 = f.querySelector('[name=password]').value;
+          const p2 = f.querySelector('[name=password2]').value;
+          if (p1.length < 8) return 'Password must be at least 8 characters';
+          if (p1 !== p2) return 'Passwords do not match';
+          return null;
+        }
+      );
+    });
+  </script>
+</body>
+</html>
