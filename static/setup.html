@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup</title>
+  <link rel="stylesheet" href="/base.css?v=note2">
+  <link rel="stylesheet" href="/modal.css?v=note2">
+  <link rel="stylesheet" href="/forms.css?v=note2">
+  <script src="/theme.js"></script>
+</head>
+<body class="modal-page">
+  <main class="modal-backdrop">
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <header class="modal-header">
+        <div>
+          <h1 id="setup-title">Setup</h1>
+          <p class="note">Changes take effect on the next measurement cycle.</p>
+        </div>
+        <a href="/" class="modal-close" aria-label="Close" onclick="return closeModalPage(event)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </a>
+      </header>
+      <div class="modal-content">
+      <p class="note modal-note">Measurements continue in background while you configure. They will be sent to the broker when this session ends after 5 min idle.</p>
+
+<section class="setup-section">
+      <h2>Wi-Fi</h2>
+      <form id="form-wifi" class="auth-form">
+        <label>Network
+          <div class="select-field" data-field="ssid">
+            <input type="hidden" name="ssid" value="">
+            <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="select-value">Scanning networks...</span>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <ul class="select-options" role="listbox" hidden></ul>
+          </div>
+        </label>
+        <label>Password
+          <div class="pw-wrap">
+            <input type="password" name="password" placeholder="leave empty to keep current">
+            <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+        <button type="submit">Save Wi-Fi</button>
+        <p class="note wifi-note">First setup uses the device AP. After Wi-Fi is saved, hold the button 8-13 seconds to open the dashboard from the same home network.</p>
+        <p class="form-status" id="status-wifi"></p>
+      </form>
+    </section>
+<section class="setup-section">
+      <h2>Access Point</h2>
+      <form id="form-ap" class="auth-form">
+        <label>AP name
+          <input type="text" name="ssid" required placeholder="thsensor">
+        </label>
+        <label>AP password
+          <div class="pw-wrap">
+            <input type="password" name="password" placeholder="leave empty to keep current">
+            <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+        <button type="submit">Save Access Point</button>
+        <p class="note wifi-note">Changes apply the next time Configuration AP starts. WPA password must be 8-63 characters.</p>
+        <p class="form-status" id="status-ap"></p>
+      </form>
+    </section>
+<section class="setup-section">
+      <h2>MQTT</h2>
+      <form id="form-mqtt" class="auth-form">
+        <label>Department
+          <input type="text" name="department" required placeholder="kpi">
+        </label>
+        <label>Room
+          <input type="text" name="room" required placeholder="kronos">
+        </label>
+        <label>Server
+          <input type="text" name="server" required placeholder="broker.example.com">
+        </label>
+        <label>Port
+          <input type="number" name="port" value="1883" min="1" max="65535">
+        </label>
+        <label>User
+          <input type="text" name="user">
+        </label>
+        <label>Password
+          <div class="pw-wrap">
+            <input type="password" name="password" placeholder="leave empty to keep current">
+            <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="ssl">
+          <span>Use SSL</span>
+        </label>
+        <button type="submit">Save MQTT</button>
+        <p class="form-status" id="status-mqtt"></p>
+      </form>
+    </section>
+<section class="setup-section">
+      <h2>Parameters</h2>
+      <form id="form-params" class="auth-form">
+        <label>MQTT publish interval
+          <div class="range-field">
+            <input type="range" name="mqtt_interval_minutes" min="1" max="720" step="1">
+            <span id="mqtt-interval-label">5 min</span>
+          </div>
+        </label>
+        <p class="note interval-warning" id="mqtt-interval-warning"></p>
+        <label>Units
+          <div class="select-field" data-field="units">
+            <input type="hidden" name="units" value="metric">
+            <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="select-value">Celsius (°C)</span>
+              <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <ul class="select-options" role="listbox" hidden>
+              <li role="option" data-value="metric">Celsius (°C)</li>
+              <li role="option" data-value="imperial">Fahrenheit (°F)</li>
+              <li role="option" data-value="standard">Kelvin (K)</li>
+            </ul>
+          </div>
+        </label>
+        <label>NTP server
+          <input type="text" name="ntp_server" placeholder="pool.ntp.org">
+        </label>
+        <button type="submit">Save parameters</button>
+        <p class="form-status" id="status-params"></p>
+      </form>
+    </section>
+<section class="setup-section">
+      <h2>Appearance</h2>
+      <div class="auth-form auth-form-wide">
+        <div class="theme-group">
+          <span class="theme-group-label">Dark</span>
+          <div class="theme-grid">
+            <button type="button" class="theme-swatch" data-theme="ocean" aria-label="Ocean dark">
+              <span class="theme-preview" style="--tp-b:#080f1e;--tp-a:#00cfaa;--tp-c:#0d1f38"></span>
+              <span class="theme-name">Ocean</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="forest" aria-label="Forest dark">
+              <span class="theme-preview" style="--tp-b:#081408;--tp-a:#00d46a;--tp-c:#0e2010"></span>
+              <span class="theme-name">Forest</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="dusk" aria-label="Dusk dark">
+              <span class="theme-preview" style="--tp-b:#100d1e;--tp-a:#a78bfa;--tp-c:#18153a"></span>
+              <span class="theme-name">Dusk</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="midnight" aria-label="Midnight dark">
+              <span class="theme-preview" style="--tp-b:#080808;--tp-a:#22d3ee;--tp-c:#141414"></span>
+              <span class="theme-name">Midnight</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="ember" aria-label="Ember dark">
+              <span class="theme-preview" style="--tp-b:#17100a;--tp-a:#f59e0b;--tp-c:#241a0e"></span>
+              <span class="theme-name">Ember</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="rose" aria-label="Rose dark">
+              <span class="theme-preview" style="--tp-b:#1a0810;--tp-a:#f472b6;--tp-c:#240f18"></span>
+              <span class="theme-name">Rose</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="slate" aria-label="Slate dark">
+              <span class="theme-preview" style="--tp-b:#0d1117;--tp-a:#38bdf8;--tp-c:#161c24"></span>
+              <span class="theme-name">Slate</span>
+            </button>
+          </div>
+        </div>
+        <div class="theme-group">
+          <span class="theme-group-label">Light</span>
+          <div class="theme-grid">
+            <button type="button" class="theme-swatch" data-theme="ocean-light" aria-label="Ocean light">
+              <span class="theme-preview" style="--tp-b:#f0f7ff;--tp-a:#007a66;--tp-c:#ffffff"></span>
+              <span class="theme-name">Ocean</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="forest-light" aria-label="Forest light">
+              <span class="theme-preview" style="--tp-b:#f0f8f2;--tp-a:#007a3a;--tp-c:#ffffff"></span>
+              <span class="theme-name">Forest</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="dusk-light" aria-label="Dusk light">
+              <span class="theme-preview" style="--tp-b:#f4f2fc;--tp-a:#6c3ef0;--tp-c:#ffffff"></span>
+              <span class="theme-name">Dusk</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="midnight-light" aria-label="Midnight light">
+              <span class="theme-preview" style="--tp-b:#f5f5f5;--tp-a:#0088aa;--tp-c:#ffffff"></span>
+              <span class="theme-name">Midnight</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="ember-light" aria-label="Ember light">
+              <span class="theme-preview" style="--tp-b:#fef8f0;--tp-a:#b86800;--tp-c:#ffffff"></span>
+              <span class="theme-name">Ember</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="rose-light" aria-label="Rose light">
+              <span class="theme-preview" style="--tp-b:#fff5f8;--tp-a:#d0185a;--tp-c:#ffffff"></span>
+              <span class="theme-name">Rose</span>
+            </button>
+            <button type="button" class="theme-swatch" data-theme="slate-light" aria-label="Slate light">
+              <span class="theme-preview" style="--tp-b:#f2f5f8;--tp-a:#0070aa;--tp-c:#ffffff"></span>
+              <span class="theme-name">Slate</span>
+            </button>
+          </div>
+        </div>
+        <p class="note wifi-note">Theme is saved in this browser only.</p>
+        <button type="button" id="btn-save-theme" disabled>Save theme</button>
+        <p class="form-status" id="status-theme"></p>
+      </div>
+    </section>
+<section class="setup-section">
+      <h2>LED</h2>
+      <form id="form-led" class="auth-form">
+        <div class="color-grid">
+          <label>Alive / Init
+            <div class="color-row">
+              <input type="hidden" name="alive_color" value="#1aff00">
+              <div class="color-picker" data-led-role="alive">
+                <button type="button" class="color-trigger" aria-label="Choose Alive / Init color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="alive_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="alive">25%</span>
+            </div>
+          </label>
+          <label>Measurement
+            <div class="color-row">
+              <input type="hidden" name="measurement_color" value="#00ffd2">
+              <div class="color-picker" data-led-role="measurement">
+                <button type="button" class="color-trigger" aria-label="Choose Measurement color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="measurement_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="measurement">25%</span>
+            </div>
+          </label>
+          <label>Configuration AP
+            <div class="color-row">
+              <input type="hidden" name="config_ap_color" value="#0095ff">
+              <div class="color-picker" data-led-role="config_ap">
+                <button type="button" class="color-trigger" aria-label="Choose Configuration AP color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="config_ap_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="config_ap">25%</span>
+            </div>
+          </label>
+          <label>Configuration STA
+            <div class="color-row">
+              <input type="hidden" name="config_sta_color" value="#003cff">
+              <div class="color-picker" data-led-role="config_sta">
+                <button type="button" class="color-trigger" aria-label="Choose Configuration STA color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="config_sta_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="config_sta">25%</span>
+            </div>
+          </label>
+          <label>Network / MQTT
+            <div class="color-row">
+              <input type="hidden" name="network_color" value="#6811ff">
+              <div class="color-picker" data-led-role="network">
+                <button type="button" class="color-trigger" aria-label="Choose Network / MQTT color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="network_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="network">25%</span>
+            </div>
+          </label>
+          <label>Error
+            <div class="color-row">
+              <input type="hidden" name="error_color" value="#ff0000">
+              <div class="color-picker" data-led-role="error">
+                <button type="button" class="color-trigger" aria-label="Choose Error color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="error_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="error">25%</span>
+            </div>
+          </label>
+          <label>Factory reset
+            <div class="color-row">
+              <input type="hidden" name="factory_reset_color" value="#ff5900">
+              <div class="color-picker" data-led-role="factory_reset">
+                <button type="button" class="color-trigger" aria-label="Choose Factory reset color"></button>
+                <div class="color-palette" hidden></div>
+              </div>
+              <input type="range" name="factory_reset_brightness" min="0" max="100" step="1" value="25">
+              <span data-led-brightness="factory_reset">25%</span>
+            </div>
+          </label>
+        </div>
+        <p class="note wifi-note">Colors must be unique. Brightness does not make duplicate colors valid.</p>
+        <button type="submit">Save LED</button>
+        <p class="form-status" id="status-led"></p>
+      </form>
+    </section>
+<section class="setup-section">
+      <h2>Password</h2>
+      <form id="form-password" class="auth-form" data-step="current" novalidate>
+        <div class="pw-step pw-step-current">
+          <label>Current password
+            <div class="pw-wrap">
+              <input type="password" name="current_password" autocomplete="current-password">
+              <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+          <button type="submit" data-pw-action="verify" disabled>Continue</button>
+        </div>
+        <div class="pw-step pw-step-new" hidden>
+          <p class="note pw-step-hint">Enter a new password (min 8 characters).</p>
+          <label>New password
+            <div class="pw-wrap">
+              <input type="password" name="new_password" autocomplete="new-password">
+              <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+          <label>Repeat new password
+            <div class="pw-wrap">
+              <input type="password" name="new_password2" autocomplete="new-password">
+              <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePassword(this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+          <button type="submit" data-pw-action="save" disabled>Change password</button>
+        </div>
+        <p class="form-status" id="status-password"></p>
+      </form>
+    </section>
+<section class="setup-section">
+      <form id="form-logout" class="auth-form">
+        <button type="submit">Logout</button>
+      </form>
+    </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="/auth-common.js"></script>
+  <script src="/setup.js"></script>
+</body>
+</html>
